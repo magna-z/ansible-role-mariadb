@@ -1,0 +1,32 @@
+---
+- name: ensure root password
+  community.mysql.mysql_user:
+    name: root
+    password: "{{ mariadb_root_password }}"
+    host: "%"
+    login_user: root
+    login_password: ""
+  when: _data_directory.changed
+  become: false
+
+- name: ensure roles and databases
+  block:
+    - name: ensure databases
+      community.mysql.mysql_db:
+        name: "{{ item.name }}"
+        encoding: "{{ item.encoding | default(omit) }}"
+        login_user: root
+        login_password: "{{ mariadb_root_password }}"
+        state: "{{ (item.state is defined and item.state == 'absent') | ternary('absent', 'present') }}"
+      with_items: "{{ mariadb_databases }}"
+    - name: ensure users
+      community.mysql.mysql_user:
+        name: "{{ item.username }}"
+        password: "{{ item.password }}"
+        host: "{{ item.host | default('%') }}"
+        priv: "{{ item.privs | join ('/') }}"
+        login_user: root
+        login_password: "{{ mariadb_root_password }}"
+        state: "{{ (item.state is defined and item.state == 'absent') | ternary('absent', 'present') }}"
+      with_items: "{{ mariadb_users }}"
+  become: false

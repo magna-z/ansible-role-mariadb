@@ -1,0 +1,8 @@
+---
+mariadb_docker_image: mariadb:latest
+
+mariadb_docker_network: bridge
+mariadb_docker_publish_ports: []
+
+mariadb_uid: 3306
+mariadb_gid: 3306

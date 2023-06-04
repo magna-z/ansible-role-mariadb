@@ -1,0 +1,4 @@
+---
+_mariadb_binaries_wrappers:
+  - mysql
+  - mysqldump
